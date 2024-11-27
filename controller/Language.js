@@ -96,54 +96,61 @@ export const getLanguageById = async (req, res) => {
 
 export const createLanguage = async (req, res) => {
     try {
-        const { indonesia, gorontalo, kategori, kesopanan, kalimat, gambar, suara } = req.body;
-        console.log(req.body)
+        const { indonesia, gorontalo, kategori, kesopanan, kalimat } = req.body;
+        console.log("Request Body:", req.body);
+        console.log("Uploaded Files:", req.files);
 
-
-        if(!indonesia || !gorontalo || !kategori || !kesopanan || !kalimat || !gambar || !suara) {
+        // Pastikan semua input ada
+        if (!indonesia || !gorontalo || !kategori || !kesopanan || !kalimat) {
             return res.status(400).json({
                 code: 400,
-                message: "All fields are required."
-            })
+                message: "All fields except gambar and suara are required.",
+            });
         }
 
-        // SQL query to insert a new language entry
-        const query = 'INSERT INTO languages (indonesia, gorontalo, kategori, kesopanan, kalimat, gambar, suara) VALUES (?, ?, ?, ?, ?, ?, ?)';
+        // Ambil file gambar dan suara dari req.files
+        const gambar = req.files.gambar ? req.files.gambar[0].filename : null;
+        const suara = req.files.suara ? req.files.suara[0].filename : null;
+
+        // SQL query untuk menyimpan data
+        const query =
+            "INSERT INTO languages (indonesia, gorontalo, kategori, kesopanan, kalimat, gambar, suara) VALUES (?, ?, ?, ?, ?, ?, ?)";
         const values = [indonesia, gorontalo, kategori, kesopanan, kalimat, gambar, suara];
 
-        // Execute the query
+        // Eksekusi query
         db.query(query, values, (error, results) => {
             if (error) {
                 console.error("Error inserting data:", error);
                 return res.status(500).json({
                     code: 500,
-                    message: "Internal Server Error"
+                    message: "Internal Server Error",
                 });
             }
 
-            // Respond with success
+            // Respon sukses
             res.status(201).json({
                 data: {
-                    id: results.insertId, // Get the ID of the newly created record
+                    id: results.insertId, // ID dari record yang dibuat
                     indonesia,
                     gorontalo,
                     kategori,
                     kalimat,
                     gambar,
-                    suara
+                    suara,
                 },
                 code: 201,
-                message: "Language Created"
+                message: "Language Created",
             });
         });
     } catch (error) {
-        console.log(error.message);
+        console.error("Error:", error.message);
         res.status(500).json({
             code: 500,
-            message: "Internal Server Error"
+            message: "Internal Server Error",
         });
     }
 };
+
 
 export const editLanguage = async (req, res) => {
     try {
