@@ -1,5 +1,5 @@
+import  upload  from "../middleware/upload.js";
 import express from "express";
-import upload from "../middleware/upload.js";
 import { createLanguage, deleteLanguage, editLanguage, getLanguages, getLanguageById } from "../controller/Language.js";
 
 const router = express.Router();

@@ -1,5 +1,7 @@
 import express from "express";
 import path from "path";
+import { fileURLToPath } from "url";
+import fs from "fs";
 import cors from "cors";
 import dotenv from "dotenv";
 import db from "./database/db.js";
@@ -12,9 +14,12 @@ dotenv.config();
 
 const app = express();
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const uploadDir = path.join(__dirname, "uploads");
-if (!require("fs").existsSync(uploadDir)) {
-    require("fs").mkdirSync(uploadDir);
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir);
 }
 
 app.use(express.static(uploadDir));
